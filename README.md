@@ -8,6 +8,10 @@
   Domain-specialized large reasoning model for radiological impression generation
 </p>
 
+<p align="center">
+  https://radiochatbot.vip.cpolar.cn/
+</p>
+
 ---
 ## Model inference
 ### 1. System Requirements
