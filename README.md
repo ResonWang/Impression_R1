@@ -41,9 +41,14 @@ Less than 5 minutes.
 python inference.py
 ```
 #### Example
-**Input findings**： "Strip- and patch-like hyperdense shadows are seen along the falx cerebri and tentorium cerebelli. No abnormal changes in structure or morphology are observed in the bilateral cerebral hemispheres, cerebellum, or brainstem. No abnormal density is detected within the brain parenchyma; the gray-white matter differentiation is clear. The ventricular system shows no significant dilatation, and the cerebral sulci, cisterns, and fissures appear normal. No midline shift is noted. The cranial bones show no abnormal changes. The mucosa of the bilateral paranasal sinuses shows no thickening."
+**Input findings：**  "The bilateral breasts are generally symmetrical, with a balanced distribution of glandular tissue. Both breasts show mild background parenchymal enhancement (BPE). In the outer lower quadrant of the left breast, at approximately the 4–5 o’clock position, there is a mass measuring about 23 mm × 15 mm. It is oval in shape with indistinct margins, showing iso-signal intensity on T1WI and T2WI, with areas of long T1 and short T2 signal inside. The lesion demonstrates high signal on DWI and a corresponding high signal on the ADC map. Contrast-enhanced scan shows mild-to-moderate heterogeneous enhancement, and the dynamic enhancement time–signal intensity curve (TIC) is of a persistent (type I) pattern. In the outer upper quadrant of the right breast, at approximately the 11 o’clock position, a small oval mass is seen, measuring about 9 mm × 5 mm, with well-defined margins. It shows mixed iso- to slightly high signal on T2WI and slightly low signal on T1WI. On DWI, it appears slightly hyperintense, with mildly decreased signal on the ADC map. The lesion demonstrates early marked homogeneous enhancement, and the TIC is of a persistent (type I) pattern. Scattered punctate enhancements (<5 mm in diameter) are seen in both breasts. No obvious abnormalities are noted in the skin of either breast, and no nipple retraction is observed. No enlarged lymph nodes are seen in either axilla."
 
-Output:
+
+**Output:** "The impression of this report is:
+1.Left breast mass, BI-RADS category 3–4A, likely fibroadenoma. Tissue biopsy is recommended for further evaluation.
+2.Right breast mass, BI-RADS category 3, likely fibroadenoma. Six-month imaging follow-up is recommended.
+3.Scattered punctate enhancements in both breasts, BI-RADS category 3. Six-month follow-up is recommended.
+4.Bilateral fibrocystic changes."
 
 #### Expected Runtime
 Usuallly 10–20 seconds per case currently on a normal desktop computer (network dependent).
