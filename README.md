@@ -82,6 +82,8 @@ https://colab.research.google.com/github/unslothai/notebooks/blob/main/nb/Qwen3_
 
 https://unsloth.ai/docs/get-started/reinforcement-learning-rl-guide#training-with-grpo
 
+https://github.com/MAGIC-AI4Med/RaTEScore
+
 ## Dataset
 The 200 difficult cases used for the human–AI competition can be found in: https://drive.google.com/drive/folders/1woQNddoaGuOLE48WXAo_eFWCV9ylutZr?usp=sharing
 
