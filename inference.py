@@ -1,61 +1,24 @@
-# import json
-import os
-# import shutil
-# # from unsloth import FastLanguageModel
-# from transformers import DataCollatorForLanguageModeling, TrainerCallback
-import torch
-# from datasets import load_dataset
-# from unsloth.chat_templates import standardize_sharegpt
-# import pandas as pd
-from transformers import AutoModelForCausalLM, AutoTokenizer
+# -*- coding: utf-8 -*-
+from openai import OpenAI
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-# 使用GPU 0: os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-
-# model, tokenizer = FastLanguageModel.from_pretrained(
-#     model_name="/media/user01/date/Projects/LC/qwen3/sft/output/merged_cot-epoch3",
-#     max_seq_length=4096,  # 控制上下文长度 虽然Qwen3支持40960，但建议测试时使用2048。
-#     dtype=torch.float16,  # 启用4位量化，减少微调时内存使用量至原来的1/4，适用于16GB GPU
-# )
-
-tokenizer = AutoTokenizer.from_pretrained("/media/user01/date/Projects/LC/qwen3/sft/output/merged_cot-epoch3", trust_remote_code=True)
-model = AutoModelForCausalLM.from_pretrained(
-    "/media/user01/date/Projects/LC/qwen3/sft/output/merged_cot-epoch3",
-    device_map="auto",  # 自动分配 GPU
-    torch_dtype=torch.float16  # 或 bfloat16 / float32 取决于你的硬件
-)
-model.eval()
-
-# messages = [
-#     {"role" : "user", "content" : "请根据以下放射学检查所见，生成检查结论：门脉血管显示清楚，胆囊不大，内未见异常信号影。肝内、外胆管未见扩张。胰腺形态及信号未见异常，胰管未见扩张。脾脏形态信号未见异常。左肾见数个长T1长T2信号灶，界清无强化。肾上腺未见明显异常。肝门区及腹膜后未见肿大淋巴结。无腹水征。"}
-# ]
-
-messages = [
-    {"role" : "user", "content" : "请将以下放射学检查所见改为结构化描述：门脉血管显示清楚，胆囊不大，内未见异常信号影。肝内、外胆管未见扩张。胰腺形态及信号未见异常，胰管未见扩张。脾脏形态信号未见异常。左肾见数个长T1长T2信号灶，界清无强化。肾上腺未见明显异常。肝门区及腹膜后未见肿大淋巴结。无腹水征。"}
-]
-
-text = tokenizer.apply_chat_template(
-    messages,
-    tokenize = False,
-    add_generation_prompt = True, # Must add for generation
-    enable_thinking = True, # Disable thinking
+client = OpenAI(
+    base_url="http://llm_api.vip.cpolar.cn/v1",
+    api_key="EMPTY"
 )
 
-from transformers import TextStreamer
-# _ = model.generate(
-#     **tokenizer(text, return_tensors = "pt").to("cuda"), # .to("cuda"),
-#     max_new_tokens = 4096, # Increase for longer outputs!
-#     temperature = 0.7, top_p = 0.8, top_k = 20, # For non thinking
-#     streamer = TextStreamer(tokenizer, skip_prompt = True),
-# )
+System_prompt_zh = "请根据以下放射学检查所见，生成检查结论。"
+System_prompt_en = "Please generate the impressions according to the following imaging findings:", # "Please generate an impression based on the following radiological findings."
 
-with torch.no_grad():
-    outputs = model.generate(
-        **tokenizer(text, return_tensors = "pt").to("cuda"), # .to("cuda"),
-        max_new_tokens = 4096, # Increase for longer outputs!
-        temperature = 0.9,
-        top_p = 0.9,
-        do_sample=True,  # Enable sampling for more diverse outputs
-    )
-response = tokenizer.decode(outputs[0], skip_special_tokens=True, skip_generation_prompt=True)
-print(response)
+Findings_zh = "大脑镰及小脑幕见条片状高密度影；双侧大脑半球、小脑及脑干结构、形态未见异常改变，脑实质未见异常密度影，灰白质界限清楚，脑室系统未见明显扩张，脑沟、脑池及脑裂均未见异常。中线结构无移位。颅板骨质未见异常改变。双侧副鼻窦粘膜无增厚。"
+Findings_en = "The bilateral breasts are generally symmetrical, with a balanced distribution of glandular tissue. Both breasts show mild background parenchymal enhancement (BPE). In the outer lower quadrant of the left breast, at approximately the 4–5 o’clock position, there is a mass measuring about 23 mm × 15 mm. It is oval in shape with indistinct margins, showing iso-signal intensity on T1WI and T2WI, with areas of long T1 and short T2 signal inside. The lesion demonstrates high signal on DWI and a corresponding high signal on the ADC map. Contrast-enhanced scan shows mild-to-moderate heterogeneous enhancement, and the dynamic enhancement time–signal intensity curve (TIC) is of a persistent (type I) pattern. In the outer upper quadrant of the right breast, at approximately the 11 o’clock position, a small oval mass is seen, measuring about 9 mm × 5 mm, with well-defined margins. It shows mixed iso- to slightly high signal on T2WI and slightly low signal on T1WI. On DWI, it appears slightly hyperintense, with mildly decreased signal on the ADC map. The lesion demonstrates early marked homogeneous enhancement, and the TIC is of a persistent (type I) pattern. Scattered punctate enhancements (<5 mm in diameter) are seen in both breasts. No obvious abnormalities are noted in the skin of either breast, and no nipple retraction is observed. No enlarged lymph nodes are seen in either axilla."
+
+response = client.chat.completions.create(
+    model="Impression-R1-grpo2820",
+    messages=[
+        {"role": "user", "content": f'{System_prompt_en} {Findings_en}'}
+    ],
+    temperature=0.6,
+    top_p=0.95,
+)
+
+print(response.choices[0].message.content)
