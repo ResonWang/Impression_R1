@@ -54,12 +54,33 @@ To run on your own data, modify the input inside `inference.py` or extend the sc
 ## Model training
 `Train_RARO.py` is the RARO RL training code.
 
-## Dataset
-The 200 difficult cases used for the human–AI competition can be found in:
-https://drive.google.com/drive/folders/1woQNddoaGuOLE48WXAo_eFWCV9ylutZr?usp=sharing
+### 1. System Requirements
 
-The three public datasets can be found in:
-https://drive.google.com/drive/folders/1Gsm1mQ54TyvwYDgZVnPTiVARW1lWpAvh?usp=sharing
+#### Operating System
+- Tested on: Ubuntu 22.04
+
+#### Software Dependencies
+- Python 3.12
+
+Install dependency:
+
+```bash
+pip install unsloth
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+(pip install torch torchvision torchaudio \
+  -i https://pypi.tuna.tsinghua.edu.cn/simple \
+  --extra-index-url https://download.pytorch.org/whl/cu121)
+pip install vllm
+```
+#### Reference
+https://colab.research.google.com/github/unslothai/notebooks/blob/main/nb/Qwen3_(4B)-GRPO.ipynb
+
+https://unsloth.ai/docs/get-started/reinforcement-learning-rl-guide#training-with-grpo
+
+## Dataset
+The 200 difficult cases used for the human–AI competition can be found in: https://drive.google.com/drive/folders/1woQNddoaGuOLE48WXAo_eFWCV9ylutZr?usp=sharing
+
+The three public datasets can be found in: https://drive.google.com/drive/folders/1Gsm1mQ54TyvwYDgZVnPTiVARW1lWpAvh?usp=sharing
 
 The private datasets are not available due to privacy issues. 
 
