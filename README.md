@@ -81,7 +81,7 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
   --extra-index-url https://download.pytorch.org/whl/cu121)
 pip install vllm
 ```
-#### Reference
+#### References
 https://colab.research.google.com/github/unslothai/notebooks/blob/main/nb/Qwen3_(4B)-GRPO.ipynb
 
 https://unsloth.ai/docs/get-started/reinforcement-learning-rl-guide#training-with-grpo
