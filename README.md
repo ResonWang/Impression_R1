@@ -56,7 +56,7 @@ pip install openai
 python Inference.py
 ```
 
-The evaluation configuration used for Impression-R1 was temperature `0.6`, top-p `0.95`, maximum output length `8192` tokens, and the default repetition penalty (`1.0`, not explicitly modified). Runtime depends on the endpoint and network connection.
+The evaluation configuration used for Impression-R1 was temperature `0.6`, top-p `0.95`, and maximum output length `8192` tokens. Runtime depends on the endpoint and network connection.
 
 To evaluate additional cases, replace the example findings in `Inference.py` or extend the client to read a structured input file. The script should be used only with deidentified data and an endpoint approved by the relevant institution.
 
