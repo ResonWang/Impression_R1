@@ -1,14 +1,17 @@
 import json
 import os
 import shutil
+import math
 from unsloth import FastLanguageModel
-from transformers import TrainerCallback
+from transformers import DataCollatorForLanguageModeling, TrainerCallback
 import torch
-from datasets import  Dataset
+from datasets import load_dataset, Dataset
+from unsloth.chat_templates import standardize_sharegpt
+import pandas as pd
+from openai import OpenAI
 import re
 from RaTEScore.scorer import RaTEScore
 from trl import GRPOConfig, GRPOTrainer
-
 
 def extract_xml_answer(text: str) -> str:
     match = re.search(r"检查结论：([\s\S]*)", text)
@@ -52,15 +55,26 @@ def RateScore_reward_func(prompts, completions, answer, **kwargs) -> list[float]
             f"\n[Warning] Score count {len(scores)} != Completions count {len(completions)}. Padding/filling fallback scores.")
         scores = scores + [0.5] * (len(completions) - len(scores))
         scores = scores[:len(completions)]
-    return [6 * (s - 0.5) for s in scores]
+    return [6 * (s - 0.5) for s in scores] # [math.tanh(6 * (s - 0.5)) for s in scores] # [2.0 * s for s in scores]   [4.0 * (s - 0.5) for s in scores]
 
 def load_my_medical_json(path):
+    """
+    返回值每个元素：
+    {
+    'prompt': {'role': 'user', 'content': ...},   # 一个 dict
+    'answer': ...                                 # 一个字符串
+    }
+    :param path:
+    :return:
+    """
     data = []
     with open(path, 'r', encoding='utf-8') as f:
-        sessions = json.load(f)
+        sessions = json.load(f)  # 直接加载整个JSON文件
         for session in sessions:
+            # session 是一个长度为2的列表
             prompt = [{'role': 'user', 'content': session[0]['content'].replace('\n', '')}]
             answer_raw = session[1]['content'].strip().replace('\n', '')
+            # 去掉开头的“检查结论：”（包括中文全角冒号和英文冒号的情况）
             if answer_raw.startswith("检查结论："):
                 answer = answer_raw[len("检查结论："):].strip()
             elif answer_raw.startswith("检查结论："):
@@ -75,13 +89,13 @@ def load_my_medical_json(path):
 
 max_seq_length = 8192
 model, tokenizer = FastLanguageModel.from_pretrained(
-    model_name="",
+    model_name="second_stage_merged_weights",
     max_seq_length=max_seq_length,
     dtype=torch.float16,
     fast_inference=True,
 )
 
-non_reasoning_dataset = load_my_medical_json('./grpo_data_1224.json')
+non_reasoning_dataset = load_my_medical_json('./grpo_32.json')
 from tqdm import tqdm
 
 def calc_token_lengths(dataset, tokenizer):
@@ -117,9 +131,14 @@ model = FastLanguageModel.get_peft_model(
 
 class CustomSaveCallback(TrainerCallback):
     def __init__(self, output_dir, max_step_checkpoints=5):
+        """
+        自定义保存回调，同时支持：
+        1. 每个epoch保存（不清除）
+        2. 限制steps保存的数量，超过自动清除最早的
+        """
         self.output_dir = output_dir
         self.max_step_checkpoints = max_step_checkpoints
-        self.step_checkpoints = []
+        self.step_checkpoints = []  # 跟踪所有step保存的路径
 
     def on_epoch_end(self, args, state, control, model=None, **kwargs):
         epoch_output_dir = os.path.join(self.output_dir, 'epoch', f"epoch-{state.epoch}")
@@ -138,6 +157,7 @@ class CustomSaveCallback(TrainerCallback):
                 self._clean_old_step_checkpoints()
 
     def _clean_old_step_checkpoints(self):
+        # 按step排序，保留最新的max_step_checkpoints个
         self.step_checkpoints.sort(key=lambda x: x[0])
         old_checkpoints = self.step_checkpoints[:-self.max_step_checkpoints]
 
@@ -164,11 +184,10 @@ training_args = GRPOConfig(
     max_prompt_length = max_prompt_length,
     max_completion_length = max_seq_length - max_prompt_length,
     num_train_epochs = 10,
-    # max_steps = 250,
     save_steps = 10,
     max_grad_norm = 0.1,
     report_to = "none",
-    output_dir="",
+    output_dir="/output/grpo",
     save_strategy='steps',
     save_total_limit=5,
     beta = 0.005,
@@ -182,7 +201,7 @@ trainer = GRPOTrainer(
         RateScore_reward_func,
     ],
     callbacks=[CustomSaveCallback(
-        output_dir="",
+        output_dir="/cot_GRPO/",
         max_step_checkpoints=5
     )],
     args = training_args,
@@ -191,6 +210,6 @@ trainer = GRPOTrainer(
 
 trainer_stats = trainer.train(resume_from_checkpoint = True)
 
-model.save_pretrained("grpo_saved_lora")
-tokenizer.save_pretrained("grpo_saved_lora")
+model.save_pretrained("grpo")
+tokenizer.save_pretrained("grpo")
 
