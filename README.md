@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/42a6f6da-6761-4e2c-a1c0-f68ba2b4a6dc" width="100" alt="Impression-R1 logo" />
+  <img src="logo.jpg" width="100" alt="Impression-R1 logo" />
 </p>
 
 <h1 align="center">Impression-R1</h1>
@@ -107,16 +107,17 @@ The default scripts train Stage 1 for 3 epochs, Stage 2 for 3 epochs, and Stage 
 
 ## Data availability
 
-- The 200 difficult cases used in the human-AI competition are available [here](https://drive.google.com/drive/folders/1woQNddoaGuOLE48WXAo_eFWCV9ylutZr?usp=sharing).
-- The three public evaluation datasets are available [here](https://drive.google.com/drive/folders/1Gsm1mQ54TyvwYDgZVnPTiVARW1lWpAvh?usp=sharing).
+- The deidentified dataset of 200 difficult cases used in the human-AI competition is available on [Zenodo](https://doi.org/10.5281/zenodo.22686009).
+- The case-identifier lists for the IU X-Ray and CTRG evaluation sets are available on [Zenodo](https://doi.org/10.5281/zenodo.22693698).
+- The IU X-Ray and CTRG source datasets are available from the [Open-i repository](https://openi.nlm.nih.gov/) and the [CTRG repository](https://github.com/tangyuhao2016/CTRG), respectively.
+- MIMIC-IV-Note v2.2 is available under restricted access from [PhysioNet](https://physionet.org/content/mimic-iv-note/2.2/) (DOI: [10.13026/1n74-ne17](https://doi.org/10.13026/1n74-ne17)). Access must be obtained directly from PhysioNet by becoming a credentialed user, completing the required training, and accepting the PhysioNet Credentialed Health Data Use Agreement. The source reports and case identifiers from MIMIC-IV-Note cannot be redistributed by the authors.
 - Representative, deidentified examples for each training stage are included in `Training/`.
-- Nonpublic clinical datasets are not publicly released because the original governance approvals and data-use agreements do not permit unrestricted redistribution.
 
 ## Availability and governance
 
-The full model weights and complete nonpublic training data are not provided as unrestricted downloads. This restriction reflects patient privacy, institutional governance, potential memorization and data leakage, regulatory and compliance obligations, and intellectual-property considerations.
+The raw institution-derived clinical reports used for model training and evaluation cannot be made publicly available because they contain potentially identifiable patient information and are subject to institutional privacy, ethics, security, and data-use restrictions. These data are also not available through controlled access because the applicable ethics approvals and institutional data-use agreements do not permit their transfer to external researchers.
 
-Qualified researchers may request controlled access for justified noncommercial research purposes. Requests are subject to institutional review, applicable data-use agreements, information-security requirements, and any necessary ethics or legal approvals. Access is not guaranteed. Please use the contact information provided in the associated manuscript or repository to submit a request describing the research purpose, institution, requested artifacts, and proposed safeguards.
+The trained model weights are likewise not publicly available or available through controlled access because they were developed using these restricted institution-derived clinical reports, and their distribution is prohibited by the applicable institutional data-use and confidentiality agreements.
 
 ## References
 
